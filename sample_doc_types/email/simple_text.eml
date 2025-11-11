@@ -1,0 +1,14 @@
+From: sender@example.com
+To: recipient@example.com
+Subject: Simple Text Email
+Date: Mon, 15 Jan 2024 10:30:00 +0000
+Message-ID: <12345@example.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+This is a simple plain text email message for testing the parser module.
+
+It contains multiple paragraphs to test text extraction capabilities.
+
+Best regards,
+Test Sender
