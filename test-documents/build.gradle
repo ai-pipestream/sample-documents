@@ -6,14 +6,7 @@ plugins {
 
 description = 'Test documents for testing Pipestream AI parsers'
 
-// Copy existing test-documents content to resources
-task copyTestDocuments(type: Copy) {
-    from '../test-documents-source'
-    into 'src/main/resources'
-}
-
-// Ensure resources are copied before compilation
-processResources.dependsOn copyTestDocuments
+// Documents are placed directly in src/main/resources
 
 java {
     withJavadocJar()

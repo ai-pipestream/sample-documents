@@ -6,15 +6,7 @@ plugins {
 
 description = 'Sample document types for testing Pipestream AI parsers'
 
-// Copy existing sample_doc_types content to resources
-task copySampleDocTypes(type: Copy) {
-    from '../sample_doc_types'
-    into 'src/main/resources'
-    exclude 'README.md'  // Exclude README from resources
-}
-
-// Ensure resources are copied before compilation
-processResources.dependsOn copySampleDocTypes
+// Documents are placed directly in src/main/resources
 
 java {
     withJavadocJar()
