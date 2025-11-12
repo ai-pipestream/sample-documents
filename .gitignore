@@ -285,3 +285,7 @@ dist
 .pnp.*
 
 .idea
+.gradle
+build
+out
+
