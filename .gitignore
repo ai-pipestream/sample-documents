@@ -13,4 +13,6 @@ gradle-wrapper.jar
 Thumbs.db
 
 # Resource files are generated at build time, don't commit them
-**/src/main/resources/*
+**/src/main/resources/
+sample-doc-types/src/main/resources/
+test-documents/src/main/resources/
