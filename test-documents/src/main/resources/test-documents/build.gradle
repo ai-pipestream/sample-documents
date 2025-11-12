@@ -1,0 +1,80 @@
+plugins {
+    alias(libs.plugins.java.library)
+    alias(libs.plugins.maven.publish)
+    id 'signing'
+}
+
+description = 'Test documents for testing Pipestream AI parsers'
+
+// Copy existing test-documents content to resources
+task copyTestDocuments(type: Copy) {
+    from '../test-documents'
+    into 'src/main/resources'
+}
+
+// Ensure resources are copied before compilation
+processResources.dependsOn copyTestDocuments
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+// No source code - just resources
+sourceSets.main.java.srcDirs = []
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            artifactId = 'test-documents'
+
+            pom {
+                name = 'Pipestream AI Test Documents'
+                description = 'Test documents for testing Pipestream AI parsers'
+                url = 'https://github.com/ai-pipestream/sample-documents'
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'krickert'
+                        name = 'Krickert'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:git://github.com/ai-pipestream/sample-documents.git'
+                    developerConnection = 'scm:git:ssh://git@github.com/ai-pipestream/sample-documents.git'
+                    url = 'https://github.com/ai-pipestream/sample-documents'
+                }
+            }
+        }
+    }
+
+    repositories {
+        mavenLocal()
+    }
+}
+
+// nmcp configuration inherited from root project
+
+signing {
+    def signingKey = System.getenv("GPG_SIGNING_KEY")
+    def signingPassword = System.getenv("GPG_SIGNING_PASSPHRASE")
+
+    if (signingKey && signingPassword) {
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign publishing.publications.maven
+    }
+}
+
+// Suppress enforced platform validation for publishing
+tasks.withType(GenerateModuleMetadata) {
+    suppressedValidationErrors.add('enforced-platform')
+}
