@@ -1,0 +1,110 @@
+plugins {
+    alias(libs.plugins.java.platform)
+    alias(libs.plugins.maven.publish)
+    id 'version-catalog'
+    id 'signing'
+}
+
+// Group and version inherited from root project
+description = 'Test Data BOM - Bill of Materials'
+
+javaPlatform {
+    allowDependencies()
+}
+
+dependencies {
+    constraints {
+        // Test data modules - all in coordinated release train
+        api("ai.pipestream.testdata:sample-doc-types:${version}")
+        api("ai.pipestream.testdata:test-documents:${version}")
+    }
+}
+
+catalog {
+    versionCatalog {
+        from(files("../gradle/libs.versions.toml"))
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.javaPlatform
+            artifactId = 'testdata-bom'
+
+            pom {
+                name = 'Pipestream AI Test Data BOM'
+                description = 'Bill of Materials for Pipestream AI Test Data'
+                url = 'https://github.com/ai-pipestream/sample-documents'
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'krickert'
+                        name = 'Krickert'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:git://github.com/ai-pipestream/sample-documents.git'
+                    developerConnection = 'scm:git:ssh://git@github.com/ai-pipestream/sample-documents.git'
+                    url = 'https://github.com/ai-pipestream/sample-documents'
+                }
+            }
+        }
+
+        catalog(MavenPublication) {
+            from components.versionCatalog
+            artifactId = 'testdata-bom-catalog'
+
+            pom {
+                name = 'Pipestream AI Test Data BOM Catalog'
+                description = 'Version Catalog for Pipestream AI Test Data'
+                url = 'https://github.com/ai-pipestream/sample-documents'
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'krickert'
+                        name = 'Krickert'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:git://github.com/ai-pipestream/sample-documents.git'
+                    developerConnection = 'scm:git:ssh://git@github.com/ai-pipestream/sample-documents.git'
+                    url = 'https://github.com/ai-pipestream/sample-documents'
+                }
+            }
+        }
+    }
+
+    repositories {
+        mavenLocal()
+    }
+}
+
+// nmcp configuration inherited from root project
+
+signing {
+    def signingKey = System.getenv("GPG_SIGNING_KEY")
+    def signingPassword = System.getenv("GPG_SIGNING_PASSPHRASE")
+
+    if (signingKey && signingPassword) {
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign publishing.publications.maven
+        sign publishing.publications.catalog
+    }
+}

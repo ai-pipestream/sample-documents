@@ -1,0 +1,8 @@
+[versions]
+# Minimal versions for test data publishing
+
+[plugins]
+java = { id = "java" }
+java-library = { id = "java-library" }
+java-platform = { id = "java-platform" }
+maven-publish = { id = "maven-publish" }

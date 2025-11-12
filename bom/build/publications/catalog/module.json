@@ -1,0 +1,36 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "ai.pipestream.testdata",
+    "module": "testdata-bom-catalog",
+    "version": "0.1.0-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.2.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "versionCatalogElements",
+      "attributes": {
+        "org.gradle.category": "platform",
+        "org.gradle.usage": "version-catalog"
+      },
+      "files": [
+        {
+          "name": "testdata-bom-catalog-0.1.0-SNAPSHOT.toml",
+          "url": "testdata-bom-catalog-0.1.0-SNAPSHOT.toml",
+          "size": 328,
+          "sha512": "40407205cce7e5ba2db487c6a6250bc849c43aa880171af7b1fa0a18117cfe0fb82e129413622541c9b2a34ee61bb17c1bc12a9009d6e3b4a3277b347e5d2720",
+          "sha256": "a8c1f2ee5e8de410ba80f1809c49080fdbda5a8f20d83f53df94c829ce04b6d0",
+          "sha1": "9b794287fcf460d4e6e6ee0a8c5cd629846bf975",
+          "md5": "a0ed8f8d41f94763fd71e0ac7a852fbf"
+        }
+      ]
+    }
+  ]
+}

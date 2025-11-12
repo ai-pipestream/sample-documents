@@ -1,0 +1,35 @@
+From: support@example.com
+To: user@example.com
+Subject: Multipart Email with Attachment
+Date: Wed, 17 Jan 2024 09:45:00 +0000
+Message-ID: <multipart123@example.com>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="boundary123"
+
+--boundary123
+Content-Type: text/plain; charset=UTF-8
+
+This is the plain text part of a multipart email.
+
+The email contains both text and an attachment.
+
+--boundary123
+Content-Type: text/html; charset=UTF-8
+
+<html>
+<body>
+<p>This is the <em>HTML part</em> of the multipart email.</p>
+<p>It provides rich formatting capabilities.</p>
+</body>
+</html>
+
+--boundary123
+Content-Type: application/pdf; name="document.pdf"
+Content-Disposition: attachment; filename="document.pdf"
+Content-Transfer-Encoding: base64
+
+JVBERi0xLjQKJcOkw7zDtsO4CjIgMCBvYmoKPDwKL0xlbmd0aCAzIDAgUgo+PgpzdHJlYW0K
+QlQKL0YxIDEyIFRmCjcyIDcyMCBUZAooSGVsbG8gV29ybGQpIFRqCkVUCmVuZHN0cmVhbQpl
+bmRvYmoKCjMgMCBvYmoKNDQKZW5kb2JqCgo=
+
+--boundary123--

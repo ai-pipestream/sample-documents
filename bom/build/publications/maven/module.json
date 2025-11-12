@@ -1,0 +1,64 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "ai.pipestream.testdata",
+    "module": "testdata-bom",
+    "version": "0.1.0-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.2.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "platform",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencyConstraints": [
+        {
+          "group": "ai.pipestream.testdata",
+          "module": "sample-doc-types",
+          "version": {
+            "requires": "0.1.0-SNAPSHOT"
+          }
+        },
+        {
+          "group": "ai.pipestream.testdata",
+          "module": "test-documents",
+          "version": {
+            "requires": "0.1.0-SNAPSHOT"
+          }
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "platform",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencyConstraints": [
+        {
+          "group": "ai.pipestream.testdata",
+          "module": "sample-doc-types",
+          "version": {
+            "requires": "0.1.0-SNAPSHOT"
+          }
+        },
+        {
+          "group": "ai.pipestream.testdata",
+          "module": "test-documents",
+          "version": {
+            "requires": "0.1.0-SNAPSHOT"
+          }
+        }
+      ]
+    }
+  ]
+}

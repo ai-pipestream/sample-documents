@@ -1,0 +1,24 @@
+From: marketing@company.com
+To: customer@example.com
+Subject: HTML Newsletter
+Date: Tue, 16 Jan 2024 14:15:00 +0000
+Message-ID: <67890@company.com>
+MIME-Version: 1.0
+Content-Type: text/html; charset=UTF-8
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Newsletter</title>
+</head>
+<body>
+    <h1>Welcome to Our Newsletter</h1>
+    <p>This is an <strong>HTML email</strong> with formatting.</p>
+    <ul>
+        <li>Feature 1</li>
+        <li>Feature 2</li>
+        <li>Feature 3</li>
+    </ul>
+    <p>Visit our <a href="https://example.com">website</a> for more information.</p>
+</body>
+</html>

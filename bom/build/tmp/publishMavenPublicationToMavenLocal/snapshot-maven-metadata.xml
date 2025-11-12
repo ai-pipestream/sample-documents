@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>ai.pipestream.testdata</groupId>
+  <artifactId>testdata-bom</artifactId>
+  <versioning>
+    <lastUpdated>20251112133906</lastUpdated>
+    <snapshot>
+      <localCopy>true</localCopy>
+    </snapshot>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>0.1.0-SNAPSHOT</value>
+        <updated>20251112133906</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>module</extension>
+        <value>0.1.0-SNAPSHOT</value>
+        <updated>20251112133906</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+  <version>0.1.0-SNAPSHOT</version>
+</metadata>
