@@ -16,3 +16,15 @@ Thumbs.db
 **/src/main/resources/
 sample-doc-types/src/main/resources/
 test-documents/src/main/resources/
+build
+.claude
+.gradle
+.idea
+.vscode
+*.iml
+*.log
+*.tmp
+*.bak
+*.swp
+*.class
+*.jar
