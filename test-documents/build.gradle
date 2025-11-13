@@ -6,7 +6,7 @@ plugins {
 
 description = 'Test documents for testing Pipestream AI parsers'
 
-// Documents are placed directly in src/main/resources
+// Documents are manually organized in src/main/resources/test-documents/ for correct JAR structure
 
 java {
     withJavadocJar()
