@@ -1,0 +1,140 @@
+plugins {
+    id 'pl.allegro.tech.build.axion-release' version '1.21.0'
+    id 'com.gradleup.nmcp.aggregation' version '1.2.0'
+    id 'maven-publish'
+}
+
+scmVersion {
+    tag {
+        prefix = 'v'
+    }
+    checks {
+        uncommittedChanges = false
+        aheadOfRemote = false
+        snapshotDependencies = false
+    }
+}
+
+allprojects {
+    group = 'ai.pipestream'
+    version = scmVersion.version
+}
+
+nmcpAggregation {
+    publishAllProjectsProbablyBreakingProjectIsolation()
+
+    centralPortal {
+        username = findProperty('mavenCentralUsername') ?: System.getenv('MAVEN_CENTRAL_USERNAME')
+        password = findProperty('mavenCentralPassword') ?: System.getenv('MAVEN_CENTRAL_PASSWORD')
+        publishingType = "AUTOMATIC"
+    }
+}
+
+// Aggregate task to build everything
+tasks.register('buildAll') {
+    group = 'build'
+    description = 'Build all subprojects'
+    dependsOn subprojects.collect { it.tasks.named('build') }
+}
+
+// Aggregate task to publish everything to Maven Local
+tasks.register('publishAllToMavenLocal') {
+    group = 'publishing'
+    description = 'Publish all subprojects to Maven Local'
+    dependsOn subprojects.findAll { it.tasks.findByName('publishToMavenLocal') }
+        .collect { it.tasks.named('publishToMavenLocal') }
+}
+
+// Apply common configuration to all subprojects
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
+
+    // Group and version inherited from root
+    group = rootProject.group
+    version = rootProject.version
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+        withSourcesJar()
+        withJavadocJar()
+    }
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+
+    dependencies {
+        // No dependencies needed - these are just data modules
+    }
+
+    // Package the resources into a jar
+    jar {
+        from('src/main/resources') {
+            include '**/*.pb'
+        }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
+
+    tasks.withType(Javadoc).configureEach {
+        options.encoding = 'UTF-8'
+        options.locale = 'en'
+        options.charSet = 'UTF-8'
+        options.addStringOption('Xdoclint:-missing', '-quiet')
+    }
+
+    // Publishing configuration
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.java
+
+                pom {
+                    name = project.name
+                    description = project.description ?: "Sample data module: ${project.name}"
+                    url = 'https://github.com/ai-pipestream/sample-documents'
+
+                    licenses {
+                        license {
+                            name = 'MIT License'
+                            url = 'https://opensource.org/licenses/MIT'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = 'krickert'
+                            name = 'Pipeline Engine Team'
+                        }
+                    }
+
+                    scm {
+                        connection = 'scm:git:https://github.com/ai-pipestream/sample-documents.git'
+                        developerConnection = 'scm:git:ssh://git@github.com/ai-pipestream/sample-documents.git'
+                        url = 'https://github.com/ai-pipestream/sample-documents'
+                    }
+                }
+            }
+        }
+
+        repositories {
+            mavenLocal()
+        }
+    }
+
+    signing {
+        def signingKey = System.getenv("GPG_SIGNING_KEY")
+        def signingPassword = System.getenv("GPG_SIGNING_PASSPHRASE")
+
+        if (signingKey && signingPassword) {
+            useInMemoryPgpKeys(signingKey, signingPassword)
+            sign publishing.publications
+        }
+    }
+}
