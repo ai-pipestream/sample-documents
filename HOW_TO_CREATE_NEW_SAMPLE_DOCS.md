@@ -1,36 +1,40 @@
-# How to Create New Sample Document Collections
+# How to Create New Sample Document Modules
 
-This guide documents the process for adding new sample document collections to the `sample-documents` repository.
+This guide documents the process for adding new sample document modules to the `sample-documents` repository.
 
 ## Overview
 
-The `sample-documents` repository contains test data for validating document parsing, chunking, and processing pipelines. Sample documents are organized in the `sample_doc_types/` directory, with each subdirectory representing a specific document type or test data collection.
+The `sample-documents` repository contains test data for validating document parsing, chunking, and processing pipelines. The repository is structured as a multi-module Gradle project, where each module contains specific sample data that can be published and consumed as a Maven/Gradle dependency.
 
-## Project Structure
+## Repository Structure
 
 ```
 sample-documents/
-├── sample_doc_types/           # Main directory for sample collections
-│   ├── office/                 # Office documents (.docx, .xlsx, etc.)
-│   ├── pdf/                    # PDF documents
-│   ├── image/                  # Image files
-│   ├── double-chunked-pipedocs/    # Double-chunked protobuf samples
-│   ├── parsed-parser-pipedocs/     # Parsed protobuf samples
-│   └── ...                     # Other document types
-├── test-documents/             # Legacy test documents
-└── README.md                   # Repository documentation
+├── settings.gradle              # Root Gradle settings defining all modules
+├── gradlew, gradlew.bat        # Gradle wrapper scripts
+├── gradle/                      # Gradle wrapper configuration
+├── double-chunked-pipedocs/    # Module: Double-chunked protobuf samples
+│   ├── build.gradle
+│   ├── README.md
+│   └── src/main/resources/     # Sample .pb files
+├── parser-pipedoc-parsed/      # Module: Parsed protobuf samples
+│   ├── build.gradle
+│   ├── README.md
+│   └── src/main/resources/     # Sample .pb files
+├── sample_doc_types/           # Legacy: Sample document collections (non-module)
+└── test-documents/             # Legacy: Test documents (non-module)
 ```
 
-## Steps to Add New Sample Documents
+## Steps to Add a New Sample Module
 
 ### Step 1: Identify the Source Data
 
-First, identify where your sample data is coming from. This could be:
+First, identify where your sample data is coming from:
 - An external repository (e.g., ai-pipestream/module-chunker)
 - Generated test data
 - Curated real-world samples
 
-**Example (for double-chunked-pipedocs and parsed-parser-pipedocs):**
+**Example:**
 ```bash
 # Clone the source repository
 cd /tmp
@@ -40,144 +44,249 @@ git clone https://github.com/ai-pipestream/module-chunker.git
 ls -la /tmp/module-chunker/src/test/resources/
 ```
 
-### Step 2: Understand the Existing Structure
+### Step 2: Create the Module Directory Structure
 
-Before adding new samples, examine the existing collections to understand the naming conventions and organization:
+Create a new module directory at the repository root with the standard Maven/Gradle structure:
 
 ```bash
 # Navigate to the repository
 cd /home/user/sample-documents
 
-# Review existing sample types
-ls -la sample_doc_types/
-
-# Examine an existing README for the template pattern
-cat sample_doc_types/pdf/README.md
-```
-
-Each collection should have:
-- A descriptive directory name (use kebab-case: `my-sample-type`)
-- Sample files appropriate to the collection type
-- A `README.md` file documenting the purpose and contents
-
-### Step 3: Create the New Directory
-
-Create a new subdirectory in `sample_doc_types/` with a descriptive name:
-
-```bash
-# Use kebab-case for directory names
-mkdir -p sample_doc_types/your-sample-type-name
+# Create the module directory structure
+mkdir -p my-sample-module/src/main/resources
 ```
 
 **Naming Conventions:**
 - Use lowercase with hyphens (kebab-case)
 - Be descriptive but concise
-- Examples: `double-chunked-pipedocs`, `parsed-parser-pipedocs`, `office`, `pdf`
+- Examples: `double-chunked-pipedocs`, `parser-pipedoc-parsed`
 
-### Step 4: Copy Sample Files
+### Step 3: Copy Sample Files to Resources
 
-Copy the sample files from your source location to the new directory:
+Copy the sample files to the module's resources directory:
 
 ```bash
-# Example: Copying from module-chunker repository
-cp -r /tmp/module-chunker/src/test/resources/double_chunked_pipedocs/* \
-    sample_doc_types/double-chunked-pipedocs/
+# Example: Copying protobuf files
+cp -r /tmp/module-chunker/src/test/resources/my_samples/* \
+    my-sample-module/src/main/resources/
 
 # Verify the files were copied
-ls -lh sample_doc_types/double-chunked-pipedocs/
+ls -lh my-sample-module/src/main/resources/
 ```
 
-### Step 5: Create a README.md
+### Step 4: Create build.gradle
 
-Every sample collection must include a `README.md` file documenting:
-1. Purpose of the collection
-2. Expected file types
-3. Test coverage
-4. Sample file listing
-5. Source attribution
-6. Usage information
+Create a `build.gradle` file for the module with publishing configuration:
 
-**README Template:**
+**Template:**
+```gradle
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
 
+group = 'ai.pipestream'
+version = '0.1.2-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    // No dependencies needed - this is just a data module
+}
+
+// Package the resources into a jar
+jar {
+    from('src/main/resources') {
+        include '**/*.pb'  // Adjust file patterns as needed
+    }
+}
+
+// Publishing configuration
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+
+            pom {
+                name = 'My Sample Module Name'
+                description = 'Description of what this module contains'
+                url = 'https://github.com/ai-pipestream/sample-documents'
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'krickert'
+                        name = 'Pipeline Engine Team'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:git://github.com/ai-pipestream/sample-documents.git'
+                    developerConnection = 'scm:git:ssh://github.com/ai-pipestream/sample-documents.git'
+                    url = 'https://github.com/ai-pipestream/sample-documents'
+                }
+            }
+        }
+    }
+
+    repositories {
+        mavenLocal()
+    }
+}
+```
+
+### Step 5: Create README.md
+
+Create a comprehensive README for the module:
+
+**Template:**
 ```markdown
-# [Collection Name] Test Samples
+# [Module Name] Sample Data Module
 
-This folder contains [description] for testing [purpose].
+Brief description of what this module contains.
 
 ## Purpose
-[Detailed explanation of what these samples are used for]
+Detailed explanation of the purpose and use cases.
 
-## Expected File Types:
-- **[Type]**: .[extension] ([description])
+## Module Information
+- **Group ID**: `ai.pipestream`
+- **Artifact ID**: `my-sample-module`
+- **Version**: `0.1.2-SNAPSHOT`
 
-## Test Coverage:
-- [Coverage item 1]
-- [Coverage item 2]
-- [Coverage item 3]
-
-## Sample Files:
-[Description of the files in this directory]
-- `file_001.ext` - [description]
-- `file_002.ext` - [description]
+## Contents
+Description of the files in this module.
 
 ## Source
-These files were sourced from [source attribution with links].
+Attribution to the source of the sample data.
 
 ## Usage
-These files are used to test:
-1. [Use case 1]
-2. [Use case 2]
-3. [Use case 3]
+
+### As a Maven/Gradle Dependency
+
+**Gradle:**
+```gradle
+testImplementation 'ai.pipestream:my-sample-module:0.1.2-SNAPSHOT'
 ```
 
-### Step 6: Verify the Structure
+**Maven:**
+```xml
+<dependency>
+    <groupId>ai.pipestream</groupId>
+    <artifactId>my-sample-module</artifactId>
+    <version>0.1.2-SNAPSHOT</version>
+    <scope>test</scope>
+</dependency>
+```
 
-Verify that your new collection follows the project structure:
+### Accessing the Files
+```java
+InputStream stream = getClass().getClassLoader()
+    .getResourceAsStream("my-file.pb");
+```
+
+## Building
+```bash
+./gradlew :my-sample-module:build
+./gradlew :my-sample-module:publishToMavenLocal
+```
+```
+
+### Step 6: Update settings.gradle
+
+Add your new module to the root `settings.gradle` file:
 
 ```bash
-# Check directory structure
-tree sample_doc_types/your-sample-type-name/
-
-# Verify README exists
-cat sample_doc_types/your-sample-type-name/README.md
-
-# Count files
-ls -1 sample_doc_types/your-sample-type-name/ | wc -l
+# Edit settings.gradle
+vi settings.gradle
 ```
 
-### Step 7: Update Documentation (if needed)
+Add the include statement:
+```gradle
+include 'my-sample-module'
+```
 
-If your new collection represents a new category or has special requirements:
+**Complete settings.gradle example:**
+```gradle
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
 
-1. Update the main `README.md` in the repository root if needed
-2. Update `sample_doc_types/README.md` if it needs to reference your new collection
-3. Document any special handling or dependencies
+rootProject.name = 'sample-documents'
 
-### Step 8: Commit and Push Changes
+// Include all sample data modules
+include 'double-chunked-pipedocs'
+include 'parser-pipedoc-parsed'
+include 'my-sample-module'  // Add your module here
 
-Once everything is ready, commit your changes:
+dependencyResolutionManagement {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+```
+
+### Step 7: Verify the Build
+
+Test that your module builds successfully:
+
+```bash
+# List all modules
+./gradlew projects
+
+# Build your specific module
+./gradlew :my-sample-module:build
+
+# Publish to Maven Local for testing
+./gradlew :my-sample-module:publishToMavenLocal
+```
+
+### Step 8: Update Repository Documentation
+
+If needed, update the main README.md to reference your new module.
+
+### Step 9: Commit and Push
 
 ```bash
 # Check git status
 git status
 
-# Add the new directory
-git add sample_doc_types/your-sample-type-name/
+# Add the new module
+git add my-sample-module/
+git add settings.gradle
 
-# Create a descriptive commit message
-git commit -m "Add [collection-name] sample documents
+# Commit with descriptive message
+git commit -m "Add my-sample-module with [description]
 
-- Added [X] sample files for [purpose]
-- Includes README documenting usage and source
-- Sourced from [repository/source]"
+- Added [X] sample files
+- Module group: ai.pipestream
+- Includes comprehensive README and build configuration
+- Sourced from [source]"
 
 # Push to your branch
 git push -u origin your-branch-name
 ```
 
-## Example: Adding double-chunked-pipedocs and parsed-parser-pipedocs
+## Example: Creating double-chunked-pipedocs and parser-pipedoc-parsed
 
-Here's the actual process used to add these two collections:
+Here's the actual process used to create these two modules:
 
 ### 1. Clone the source repository:
 ```bash
@@ -185,122 +294,193 @@ cd /tmp
 git clone https://github.com/ai-pipestream/module-chunker.git
 ```
 
-### 2. Create the directories:
+### 2. Create module directories:
 ```bash
 cd /home/user/sample-documents
-mkdir -p sample_doc_types/double-chunked-pipedocs
-mkdir -p sample_doc_types/parsed-parser-pipedocs
+mkdir -p double-chunked-pipedocs/src/main/resources
+mkdir -p parser-pipedoc-parsed/src/main/resources
 ```
 
-### 3. Copy the sample files:
+### 3. Copy sample files:
 ```bash
-# Copy double-chunked samples (18 files, ~111KB total)
+# Double-chunked samples (18 files, ~111KB)
 cp -r /tmp/module-chunker/src/test/resources/double_chunked_pipedocs/* \
-    sample_doc_types/double-chunked-pipedocs/
+    double-chunked-pipedocs/src/main/resources/
 
-# Copy parsed parser samples (103 files, ~3MB total)
+# Parsed parser samples (102 files, ~3MB)
 cp -r /tmp/module-chunker/src/test/resources/parser_pipedoc_parsed/* \
-    sample_doc_types/parsed-parser-pipedocs/
+    parser-pipedoc-parsed/src/main/resources/
 ```
 
-### 4. Created README.md files:
-- `sample_doc_types/double-chunked-pipedocs/README.md`
-- `sample_doc_types/parsed-parser-pipedocs/README.md`
+### 4. Create build.gradle files:
+Created `double-chunked-pipedocs/build.gradle` and `parser-pipedoc-parsed/build.gradle` with:
+- Group ID: `ai.pipestream`
+- Appropriate artifact names
+- Maven publishing configuration
+- Java 21 compatibility
 
-### 5. Verify the structure:
-```bash
-ls -lh sample_doc_types/double-chunked-pipedocs/
-ls -lh sample_doc_types/parsed-parser-pipedocs/
+### 5. Create README.md files:
+Created comprehensive READMEs documenting:
+- Module purpose and contents
+- Maven/Gradle dependency usage
+- File listings and sizes
+- Source attribution
+
+### 6. Create root settings.gradle:
+```gradle
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'sample-documents'
+
+include 'double-chunked-pipedocs'
+include 'parser-pipedoc-parsed'
+
+dependencyResolutionManagement {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
 ```
 
-### 6. Commit and push:
+### 7. Add Gradle wrapper:
 ```bash
-git add sample_doc_types/double-chunked-pipedocs/
-git add sample_doc_types/parsed-parser-pipedocs/
-git add HOW_TO_CREATE_NEW_SAMPLE_DOCS.md
-git commit -m "Add chunker and parser protobuf sample collections
+cp -r /tmp/module-chunker/gradle .
+cp /tmp/module-chunker/gradlew* .
+```
 
-- Added double-chunked-pipedocs with 18 sample .pb files
-- Added parsed-parser-pipedocs with 103 sample .pb files
-- Both sourced from module-chunker test resources
-- Includes comprehensive README files for each collection
-- Added HOW_TO_CREATE_NEW_SAMPLE_DOCS.md documentation"
+### 8. Update .gitignore:
+Added Gradle build artifacts:
+```
+build/
+.gradle/
+**/build/
+**/.gradle/
+```
 
-git push -u origin claude/add-module-chunker-sample-data-01AitSBEhriUAWrmVs69yMHq
+### 9. Verify and commit:
+```bash
+./gradlew projects
+git add .
+git commit -m "Add sample data modules with Gradle build support"
+git push -u origin branch-name
 ```
 
 ## Best Practices
 
-### File Organization
-- Keep related files together in a single collection directory
-- Use consistent naming patterns within a collection
-- Document any special file naming conventions in the README
+### Module Organization
+- Keep one type of sample data per module
+- Use standard Maven directory structure
+- Document all files in the README
+
+### Build Configuration
+- Use consistent group ID: `ai.pipestream`
+- Version modules together (e.g., `0.1.2-SNAPSHOT`)
+- Configure Maven publishing for distribution
+- Keep dependencies minimal (usually none for data modules)
 
 ### Documentation
-- Always include a README.md
-- Be specific about the purpose and usage
+- Always include a comprehensive README.md
+- Document how to use the module as a dependency
 - Attribute sources with links
-- Document any dependencies or special requirements
+- Include example code for accessing resources
 
-### File Sizes
-- Be mindful of repository size
-- Large files (>10MB) may require Git LFS
-- Document file size distributions in the README
+### File Organization
+- Place sample files in `src/main/resources/`
+- Organize by subdirectories if needed
+- Use consistent naming patterns
 
 ### Testing
-- Verify files can be read and processed
-- Test that downstream services can consume the samples
-- Document expected behavior in the README
+- Test that the module builds successfully
+- Publish to Maven Local and test consumption
+- Verify files are accessible from classpath
+
+## Publishing Modules
+
+### To Maven Local (for testing):
+```bash
+./gradlew :module-name:publishToMavenLocal
+```
+
+### To consume in another project:
+```gradle
+repositories {
+    mavenLocal()
+}
+
+dependencies {
+    testImplementation 'ai.pipestream:module-name:0.1.2-SNAPSHOT'
+}
+```
 
 ## Troubleshooting
 
-### Issue: Files not copying correctly
+### Issue: Module not found by Gradle
 ```bash
-# Check source directory exists
-ls -la /path/to/source/
+# Verify settings.gradle includes your module
+cat settings.gradle
 
-# Verify permissions
-ls -l /path/to/source/files
-
-# Use verbose copy to see what's happening
-cp -v source/* destination/
+# List all projects
+./gradlew projects
 ```
 
-### Issue: Directory already exists
+### Issue: Build fails
 ```bash
-# Check if directory exists
-ls -la sample_doc_types/your-directory/
+# Check build.gradle syntax
+./gradlew :module-name:build --stacktrace
 
-# Remove and recreate if needed (BE CAREFUL)
-rm -rf sample_doc_types/your-directory/
-mkdir -p sample_doc_types/your-directory/
+# Verify Java version
+java -version  # Should be Java 21+
 ```
 
-### Issue: Git won't track files
+### Issue: Files not included in jar
 ```bash
-# Check .gitignore
-cat .gitignore
-
-# Force add if needed (after verifying .gitignore is correct)
-git add -f sample_doc_types/your-directory/
+# Check jar contents
+./gradlew :module-name:build
+unzip -l module-name/build/libs/module-name-*.jar
 ```
+
+### Issue: Cannot publish to Maven Local
+```bash
+# Check publishing configuration
+./gradlew :module-name:publishToMavenLocal --info
+```
+
+## Module vs. Sample Directory
+
+**When to create a Module:**
+- Sample data that should be consumed as a Maven/Gradle dependency
+- Data that will be used across multiple projects
+- Versioned and publishable artifacts
+- Examples: protobuf samples, test fixtures
+
+**When to use sample_doc_types directory:**
+- Reference samples for documentation
+- One-off test files
+- Non-compiled resources
+- Examples: document format samples, images
 
 ## Related Documentation
 
 - Main Repository README: `/README.md`
-- Sample Doc Types Overview: `/sample_doc_types/README.md`
-- Test Plan: `/sample_doc_types/TEST_PLAN.md`
+- Gradle Build Documentation: https://docs.gradle.org
+- Maven Publishing Plugin: https://docs.gradle.org/current/userguide/publishing_maven.html
 
 ## Questions or Issues?
 
-If you encounter issues or have questions about adding sample documents:
-1. Review existing sample collections for examples
+If you encounter issues or have questions:
+1. Review existing modules for examples
 2. Check the repository's README.md
-3. Consult the project documentation
+3. Consult Gradle documentation
 4. Reach out to the team
 
 ---
 
 **Last Updated:** November 14, 2025
 **Author:** Claude Code
-**Related Commits:** Initial documentation for protobuf sample collections
+**Related Commits:** Module structure for publishable sample data

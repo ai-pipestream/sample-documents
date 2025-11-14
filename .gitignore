@@ -285,3 +285,8 @@ dist
 .pnp.*
 
 .idea
+# Gradle build artifacts
+build/
+.gradle/
+**/build/
+**/.gradle/

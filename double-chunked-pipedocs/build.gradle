@@ -1,0 +1,67 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+group = 'ai.pipestream'
+version = '0.1.2-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    // No dependencies needed - this is just a data module
+}
+
+// Package the resources into a jar
+jar {
+    from('src/main/resources') {
+        include '**/*.pb'
+    }
+}
+
+// Publishing configuration
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+
+            pom {
+                name = 'Double-Chunked PipeDocs Sample Data'
+                description = 'Sample protobuf files representing double-chunked documents for testing'
+                url = 'https://github.com/ai-pipestream/sample-documents'
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'krickert'
+                        name = 'Pipeline Engine Team'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:git://github.com/ai-pipestream/sample-documents.git'
+                    developerConnection = 'scm:git:ssh://github.com/ai-pipestream/sample-documents.git'
+                    url = 'https://github.com/ai-pipestream/sample-documents'
+                }
+            }
+        }
+    }
+
+    repositories {
+        mavenLocal()
+    }
+}
