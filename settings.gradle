@@ -7,9 +7,11 @@ pluginManagement {
 
 rootProject.name = 'sample-documents'
 
-// Include the two sample data modules
+// Include all sample data modules
 include 'double-chunked-pipedocs'
 include 'parser-pipedoc-parsed'
+include 'sample-doc-types'
+include 'test-documents'
 
 dependencyResolutionManagement {
     repositories {

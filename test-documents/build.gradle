@@ -1,0 +1,17 @@
+// Group, version, and common configuration inherited from root project
+
+// Module-specific description
+description = 'Test documents collection for various file format testing'
+
+// Package all the test documents into the jar
+jar {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    from('.') {
+        include '**/*'
+        exclude 'build.gradle'
+        exclude 'build.gradle.kts'
+        exclude '**/*.gradle.kts'
+        exclude 'build/**'
+        exclude '.gradle/**'
+    }
+}

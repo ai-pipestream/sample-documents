@@ -1,0 +1,18 @@
+// Group, version, and common configuration inherited from root project
+
+// Module-specific description
+description = 'Sample document types for Tika parser testing across 14 supported document types'
+
+// Package all the test documents into the jar
+jar {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    from('.') {
+        include '**/*'
+        exclude 'build.gradle'
+        exclude 'README.md'
+        exclude 'TEST_PLAN.md'
+        exclude 'verify_structure.sh'
+        exclude 'build/**'
+        exclude '.gradle/**'
+    }
+}
