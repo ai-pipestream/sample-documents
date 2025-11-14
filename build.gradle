@@ -73,6 +73,7 @@ subprojects {
 
     // Package the resources into a jar
     jar {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
         from('src/main/resources') {
             include '**/*.pb'
         }
