@@ -3,9 +3,15 @@
 // Module-specific description
 description = 'Test documents collection for various file format testing'
 
+
 // Package all the test documents into the jar
 jar {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    
+    // Include compiled Java classes
+    from(sourceSets.main.output)
+    
+    // Include sample documents from current directory
     from('.') {
         include '**/*'
         exclude 'build.gradle'
@@ -13,5 +19,6 @@ jar {
         exclude '**/*.gradle.kts'
         exclude 'build/**'
         exclude '.gradle/**'
+        exclude 'src/**'  // Exclude source files (already compiled)
     }
 }
