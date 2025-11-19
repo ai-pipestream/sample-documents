@@ -130,13 +130,21 @@ subprojects {
     }
 
     signing {
-        // Use same env var names as core-services and modules
-        def signingKey = System.getenv("GPG_PRIVATE_KEY")
-        def signingPassword = System.getenv("GPG_PASSPHRASE")
+        // Check both old and new env var names for compatibility
+        def signingKey = System.getenv("GPG_PRIVATE_KEY") ?: System.getenv("GPG_SIGNING_KEY")
+        def signingPassword = System.getenv("GPG_PASSPHRASE") ?: System.getenv("GPG_SIGNING_PASSPHRASE")
 
         if (signingKey && signingPassword) {
             useInMemoryPgpKeys(signingKey, signingPassword)
             sign publishing.publications
         }
+    }
+
+    // Ensure all signing tasks run before nmcp bundles and publishes artifacts
+    afterEvaluate {
+        tasks.matching { it.name.startsWith("nmcp") }
+            .configureEach { nmcpTask ->
+                nmcpTask.dependsOn(tasks.withType(Sign))
+            }
     }
 }
