@@ -24,8 +24,8 @@ nmcpAggregation {
     publishAllProjectsProbablyBreakingProjectIsolation()
 
     centralPortal {
-        username = findProperty('mavenCentralUsername') ?: System.getenv('MAVEN_CENTRAL_USERNAME')
-        password = findProperty('mavenCentralPassword') ?: System.getenv('MAVEN_CENTRAL_PASSWORD')
+        username = providers.environmentVariable("MAVEN_CENTRAL_USERNAME")
+        password = providers.environmentVariable("MAVEN_CENTRAL_PASSWORD")
         publishingType = "AUTOMATIC"
     }
 }
@@ -130,8 +130,9 @@ subprojects {
     }
 
     signing {
-        def signingKey = System.getenv("GPG_SIGNING_KEY")
-        def signingPassword = System.getenv("GPG_SIGNING_PASSPHRASE")
+        // Use same env var names as core-services and modules
+        def signingKey = System.getenv("GPG_PRIVATE_KEY")
+        def signingPassword = System.getenv("GPG_PASSPHRASE")
 
         if (signingKey && signingPassword) {
             useInMemoryPgpKeys(signingKey, signingPassword)
